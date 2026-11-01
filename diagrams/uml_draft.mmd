@@ -1,0 +1,29 @@
+classDiagram
+    direction LR
+    class Task {
+        +str description
+        +str time
+        +str frequency
+        +bool completed
+        +mark_complete() None
+    }
+    class Pet {
+        +str name
+        +str species
+        +list~Task~ tasks
+        +add_task(task) None
+    }
+    class Owner {
+        +str name
+        +list~Pet~ pets
+        +add_pet(pet) None
+        +get_all_tasks() list
+    }
+    class Scheduler {
+        +Owner owner
+        +sort_by_time(tasks) list
+    }
+    Owner "1" *-- "0..*" Pet : has
+    Pet "1" *-- "0..*" Task : has
+    Scheduler --> "1" Owner : reads
+    note for Task "Draft before implementation: date-aware recurrence and task identity will be refined."
