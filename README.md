@@ -58,7 +58,7 @@ Owner owns Pets; each Pet holds Tasks. Scheduler retrieves `(Pet, Task)` pairs t
 | Recurrence | `Scheduler.mark_task_complete()` and `Task.next_occurrence()` | Complete the original and add one pending successor for daily (+1 day) or weekly (+7 days). |
 | Conflict detection | `Scheduler.detect_conflicts()` | Group pending tasks by exact date/time; return warning strings for groups of two or more. |
 
-Recurrence uses the later of the original due date and the completion date as its anchor. A task completed on its due day produces tomorrow's daily occurrence; a late completion produces tomorrow relative to completion; early completion preserves the scheduled cycle. The optional `completed_on` argument makes tests and demos deterministic. Repeated completion does not create duplicates. `Task.mark_complete()` alone only sets status; use the scheduler method for the complete recurrence workflow.
+Recurrence uses the completion date as its anchor, following the assignment's "today + 1 day" rule. A daily task creates an occurrence for the day after completion, and a weekly task creates one seven days after completion, including early or overdue completion. The optional `completed_on` argument makes tests and demos deterministic. Repeated completion does not create duplicates. `Task.mark_complete()` alone only sets status; use the scheduler method for the complete recurrence workflow.
 
 Conflicts include the same pet or different pets, omit completed tasks, and distinguish different dates. Warnings do not prevent scheduling. The UI checks all pets within the selected date range even when display filters hide a conflicting task.
 
@@ -107,23 +107,23 @@ The demo inserts five tasks out of order across two pets, shows sorted/filter re
 python -m pytest
 ```
 
-Tests cover task completion/addition, chronological sorting without mutation, daily and weekly recurrence across a year boundary, early/overdue completion, duplicate completion prevention, one-time completion, same-pet/cross-pet conflicts, different dates, combined filters, empty schedules, independent list defaults, validation, and duplicate assignment. Streamlit AppTest exercises pet creation, scheduling, completion, state retention, demo warnings, and filtering. The tests do not require a running browser.
+Tests cover task completion/addition, chronological sorting without mutation, daily and weekly recurrence across a year boundary, early/overdue completion, duplicate completion prevention, one-time completion, same-pet/cross-pet conflicts, different dates, combined filters, empty schedules, independent list defaults, validation, and duplicate assignment. Streamlit AppTest exercises pet creation, scheduling, completion, state retention, demo warnings, filtering a pet literally named "All pets", and synchronization of the demo owner's edit field. The tests do not require a running browser.
 
 Successful output from the verification run (full transcript in evidence/pytest-output.txt):
 
 ```text
 ============================= test session starts =============================
 platform win32 -- Python 3.12.14, pytest-9.2.0, pluggy-1.7.0
-rootdir: C:\Users\emirk\Documents\Codex\2026-11-01\referenced-chatgpt-conversation-this-is-an\outputs\PawPal
+rootdir: C:\Users\emirk\Documents\Codex\2026-11-01\referenced-chatgpt-conversation-this-is-an-2\work\corrected\PawPal
 configfile: pytest.ini
 testpaths: tests
 plugins: anyio-4.16.0
-collected 21 items
+collected 25 items
 
-tests\test_app.py ...                                                    [ 14%]
-tests\test_pawpal.py ..................                                  [100%]
+tests\test_app.py .....                                                  [ 20%]
+tests\test_pawpal.py ....................                                [100%]
 
-============================= 21 passed in 1.93s ==============================
+============================= 25 passed in 2.01s ==============================
 ```
 
 **Confidence Level: 4/5 stars.** Automated checks cover the required rules and key UI workflows. Limits: there is no durable database, timezone conversion, interval/duration overlap detection, or background notifications. Session state survives reruns but can reset on reload, disconnect, or restart. Recurrence creates the next task on completion; it does not expand an entire future calendar. Use backend methods rather than directly mutating domain lists or task scheduling fields.
@@ -137,7 +137,7 @@ Official references used for integration: [Streamlit Session State](https://docs
 ## Submission checklist
 
 - Required code, draft/final UML, tests, README, reflection, and run evidence are included.
-- The local Git repository records meaningful design, implementation, integration, and documentation commits. The companion Git bundle preserves that history; clone it with `git clone ../PawPal.bundle PawPal-restored` from an appropriate destination folder.
+- The corrected ZIP contains the source folder `PawPal/` and its companion `PawPal.bundle`. The bundle preserves the four original design/implementation/integration/documentation commits plus the review fixes. From the folder containing both extracted items, run `git clone PawPal.bundle PawPal-restored` to restore a repository with that history. The source folder alone does not contain `.git`.
 - Review and personalize the reflection after running the project.
 - Push the main branch to your correct public CodePath GitHub fork and verify all files and commits are visible. This delivery does not create or publish a remote repository.
 - Submit the repository through the course's Week 5 submit button and complete the separate Canvas → Modules weekly CHECK-IN, as directed in the uploaded instructions.

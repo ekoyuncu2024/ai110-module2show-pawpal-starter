@@ -36,12 +36,12 @@ class Task:
         self.completed = True
 
     def next_occurrence(self, completed_on: date):
-        """Create a successor after the later of due date and completion day."""
+        """Create a successor one day or week after the completion day."""
         days = {"daily": 1, "weekly": 7}.get(self.frequency)
         if days is None:
             return None
         return Task(self.description, self.time, self.frequency,
-                    max(self.due_date, completed_on) + timedelta(days=days))
+                    completed_on + timedelta(days=days))
 
 
 @dataclass

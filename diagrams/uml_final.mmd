@@ -39,5 +39,5 @@ classDiagram
     Pet "1" *-- "0..*" Task : holds
     Scheduler --> "1" Owner : retrieves pet-task pairs
     Scheduler ..> Task : completes and creates successors
-    note for Task "Dataclass. time is validated HH:MM. frequency is once, daily, or weekly. task_id is generated."
+    note for Task "Dataclass. time is validated HH:MM. frequency is once, daily, or weekly. task_id is generated. Successors use completion date plus 1 or 7 days."
     note for Scheduler "Optional filters default to None. All schedule lists contain Pet-Task pairs. Conflicts return warning strings."

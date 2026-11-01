@@ -52,9 +52,14 @@ def test_recurrence_year_boundary(scheduler, frequency, expected):
     assert len(scheduler.owner.get_pet("Luna").tasks) == 2
 
 
-@pytest.mark.parametrize("completion,expected", [(date(2026, 10, 31), date(2026, 11, 2)), (date(2026, 11, 4), date(2026, 11, 5))])
-def test_early_and_overdue_daily_completion(scheduler, completion, expected):
-    task = Task("Breakfast", "08:00", "daily", DAY)
+@pytest.mark.parametrize("frequency,completion,expected", [
+    ("daily", date(2026, 10, 31), date(2026, 11, 1)),
+    ("daily", date(2026, 11, 4), date(2026, 11, 5)),
+    ("weekly", date(2026, 10, 31), date(2026, 11, 7)),
+    ("weekly", date(2026, 11, 4), date(2026, 11, 11)),
+])
+def test_early_and_overdue_completion(scheduler, frequency, completion, expected):
+    task = Task("Breakfast", "08:00", frequency, DAY)
     scheduler.schedule_task("Luna", task)
     assert scheduler.mark_task_complete(task.task_id, completion).due_date == expected
 

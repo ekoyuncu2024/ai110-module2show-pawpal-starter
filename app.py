@@ -4,11 +4,22 @@ import streamlit as st
 from pawpal_system import Owner, Pet, Scheduler, Task
 from main import build_demo_owner
 
+
+def load_demo_household():
+    """Load demo data and synchronize the owner field before the rerun."""
+    owner = build_demo_owner(date.today())
+    st.session_state.owner = owner
+    st.session_state.owner_name = owner.name
+    st.session_state.notice = "Demo household loaded."
+
+
 st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="wide")
 if "owner" not in st.session_state:
     st.session_state.owner = Owner("Pet parent")
 owner = st.session_state.owner
 scheduler = Scheduler(owner)
+if "owner_name" not in st.session_state:
+    st.session_state.owner_name = owner.name
 
 st.title("🐾 PawPal+")
 st.caption("A little planning. A happier pet. Your care routine, in one place.")
@@ -19,7 +30,7 @@ with st.sidebar:
     st.header("Your household")
     st.write(f"Owner: {owner.name}")
     with st.form("owner_form"):
-        name = st.text_input("Owner name", value=owner.name, key="owner_name")
+        name = st.text_input("Owner name", key="owner_name")
         if st.form_submit_button("Save owner"):
             if name.strip():
                 owner.name = name.strip()
@@ -27,10 +38,8 @@ with st.sidebar:
                 st.rerun()
             else:
                 st.error("Owner name is required.")
-    if not owner.pets and st.button("Load demo household", key="load_demo"):
-        st.session_state.owner = build_demo_owner(date.today())
-        st.session_state.notice = "Demo household loaded."
-        st.rerun()
+    if not owner.pets:
+        st.button("Load demo household", key="load_demo", on_click=load_demo_household)
     st.caption("Data stays during this session. A browser reload or server restart may clear it.")
 
 left, right = st.columns(2)
@@ -70,13 +79,15 @@ with right:
 st.divider()
 st.subheader("3. Your schedule")
 cols = st.columns(4)
-pet_filter = cols[0].selectbox("Show pet", ["All pets"] + [p.name for p in owner.pets], key="filter_pet")
+pet_filter = cols[0].selectbox(
+    "Show pet", [None] + [p.name for p in owner.pets], key="filter_pet",
+    format_func=lambda name: "All pets" if name is None else f"Pet: {name}")
 status = cols[1].selectbox("Status", ["Pending", "All", "Completed"], key="filter_status")
 all_dates = cols[2].checkbox("Show all dates", key="all_dates")
 selected_date = cols[3].date_input("Schedule date", date.today(), key="schedule_date", disabled=all_dates)
 on_date = None if all_dates else selected_date
 entries = scheduler.get_schedule(
-    pet_name=None if pet_filter == "All pets" else pet_filter,
+    pet_name=pet_filter,
     completed={"Pending": False, "All": None, "Completed": True}[status], on_date=on_date)
 for warning in scheduler.detect_conflicts(on_date=on_date):
     st.warning(warning)

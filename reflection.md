@@ -22,13 +22,15 @@ The draft's time-only Task could not represent tomorrow or distinguish equal tim
 
 Recurrence is coordinated by Scheduler because it can attach the successor to the correct pet. Task.mark_complete() remains a simple status operation; callers wanting automatic recurrence must use Scheduler.mark_task_complete(). The UI and CLI do this consistently.
 
+The original implementation anchored early completion to the later of due_date and completion day. The follow-up review changed that policy to completion day plus one or seven days to follow the assignment's explicit "today + 1 day" guidance. This changes the next date for early completion; on-time and overdue completion keep the same behavior. Tests and the final UML note were updated with the decision.
+
 ## 2. Algorithmic Layer
 
 ### 2a. Scheduling decisions
 
 Sorting uses a stable sorted() call with a (due_date, time) key. Strict zero-padded HH:MM validation makes string order chronological within a day. Filtering combines pet, status, and date predicates. Conflict detection groups pending tasks by exact date/time and emits one warning per conflicting group, including conflicts across pets.
 
-Daily and weekly completion produces a new pending Task with a fresh identity and the same description/time/frequency. The anchor is the later of the scheduled date and the completion date: normal daily completion creates tomorrow's task; overdue completion avoids creating another overdue task; early completion does not move the routine earlier than its scheduled cycle. A completed task cannot generate another successor on a repeated click.
+Daily and weekly completion produces a new pending Task with a fresh identity and the same description/time/frequency. The anchor is the completion date: daily completion creates tomorrow's task and weekly completion creates one seven days later, even when completed early or late. This follows the assignment but means early completion can move the routine earlier. A completed task cannot generate another successor on a repeated click.
 
 ### 2b. Tradeoffs
 
@@ -42,6 +44,8 @@ The suite checks completion, task addition, sorting without mutation, empty sche
 
 The CLI was run before building the UI. Its five tasks were deliberately inserted out of order. It demonstrated the 18:00 conflict and next daily/weekly dates. Successful run output is retained in evidence/ and copied into README.md. The first interface verification hung in Streamlit 1.66.1 while its test runner opened a Windows local socket; the backend tests already passed. Pinning Streamlit 1.50.0 avoided that environment incompatibility, and all 21 tests passed without changing the domain expectations. Temporary test files were then directed into the workspace to avoid a Windows cleanup permission error. No intentionally failing tests were manufactured. If a future failure appears, compare the expected behavior to the documented recurrence/conflict rules before changing either the test or implementation.
 
+A follow-up review on November 1, 2026 reran the original CLI and all 21 original tests successfully. Two additional UI regression tests then exposed real failures: a pet named "All pets" shared the filter's special string value, and loading the demo changed the Owner while leaving the name edit field unchanged. The fixes use None as the household filter value and load the demo through a callback that synchronizes the owner field before the rerun. Recurrence expectations were also checked against the assignment: early completion revealed a policy mismatch, so the implementation and tests now use completion day plus one or seven days. Weekly early/overdue cases were added. The corrected suite contains 25 tests; the README and evidence file contain its successful output. The final UML note records the revised recurrence rule.
+
 ## 4. AI Collaboration Strategy
 
 ### Most effective assistant features
@@ -52,9 +56,13 @@ Codex's file editing and terminal execution connected the UML, backend, demo, te
 
 The starting time-only design was revised instead of treating every matching HH:MM value as a conflict. Keeping that approach would incorrectly flag tomorrow's breakfast against today's breakfast and could not express recurrence. Adding due_date and grouping by both date and time fixed the model without adding a database, inheritance hierarchy, or extra domain class. Recurrence was placed in the scheduler's completion workflow so the UI did not duplicate it.
 
+A concrete modification to the AI-generated interface came during the follow-up review: using the string "All pets" as a special filter value was replaced with None, because "All pets" is also a valid pet name. Actual pets now display with a "Pet:" prefix in that filter. A regression test demonstrated the wrong two-pet result before the fix and the correct one-pet result afterward. This records a verifiable correction to generated code; the student should add their own reasoning and understanding when reviewing this reflection.
+
 ### Separate chat sessions
 
 The assignment recommends separate chats for algorithm planning and testing. This build used one continuing chat, so it would be inaccurate to claim that separate sessions helped here. The work was organized into design, CLI/backend verification, scheduling, UI integration, and final documentation checkpoints with Git commits. In a future student-led iteration, a fresh testing chat could provide an independent review using the code, UML, and documented rules as context, reducing the chance of simply repeating the implementation's assumptions.
+
+The later review was performed in a separate follow-up chat. It provided a fresh check of the completed project and found the two UI edge cases above, but it does not establish that separate algorithm-planning and testing chats were used during the original build.
 
 ### Learning about the lead architect role
 
