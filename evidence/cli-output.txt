@@ -1,0 +1,19 @@
+PawPal+ | Owner: Alex | Pets: 2
+Today's Schedule (2026-11-01)
+08:00 | Luna | Breakfast [daily]
+09:00 | Milo | Grooming [weekly]
+12:00 | Milo | Medication reminder [daily]
+18:00 | Luna | Evening walk [once]
+18:00 | Milo | Playtime [once]
+
+Pending tasks for Luna:
+08:00 | Breakfast
+18:00 | Evening walk
+
+Conflict warnings:
+Conflict on 2026-11-01 at 18:00: Luna: Evening walk; Milo: Playtime
+
+Complete Breakfast (daily) and Grooming (weekly):
+Breakfast completed -> 2026-11-02 08:00
+Grooming completed -> 2026-11-08 09:00
+Completed tasks: 2
