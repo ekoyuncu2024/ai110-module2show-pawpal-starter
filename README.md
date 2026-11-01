@@ -130,7 +130,7 @@ tests\test_pawpal.py ....................                                [100%]
 
 ## AI collaboration and references
 
-Codex assisted with the UML, code, tests, and documentation. See reflection.md for specific decisions and an honest account of the workflow. The reflection is an AI-assisted project record for the student to review and personalize; it does not claim unperformed separate chats or personal learning experiences.
+Codex assisted with the UML, code, tests, and documentation. See reflection.md for the design decisions, testing lessons, and an account of the AI-assisted workflow, including the separate follow-up review.
 
 Official references used for integration: [Streamlit Session State](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state) and [Streamlit AppTest](https://docs.streamlit.io/develop/api-reference/app-testing/st.testing.v1.apptest).
 
