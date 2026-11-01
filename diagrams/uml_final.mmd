@@ -1,0 +1,43 @@
+classDiagram
+    direction LR
+    class Task {
+        +str description
+        +str time
+        +str frequency
+        +date due_date
+        +bool completed
+        +str task_id
+        +__post_init__()
+        +mark_complete()
+        +next_occurrence(completed_on) Task_or_None
+    }
+    class Pet {
+        +str name
+        +str species
+        +list~Task~ tasks
+        +__post_init__()
+        +add_task(task)
+    }
+    class Owner {
+        +str name
+        +list~Pet~ pets
+        +__post_init__()
+        +add_pet(pet)
+        +get_pet(name) Pet
+        +get_all_tasks() list
+    }
+    class Scheduler {
+        +Owner owner
+        +schedule_task(pet_name, task)
+        +sort_by_time(tasks) list
+        +filter_tasks(pet_name, completed, on_date) list
+        +get_schedule(pet_name, completed, on_date) list
+        +mark_task_complete(task_id, completed_on) Task_or_None
+        +detect_conflicts(on_date) list
+    }
+    Owner "1" *-- "0..*" Pet : owns
+    Pet "1" *-- "0..*" Task : holds
+    Scheduler --> "1" Owner : retrieves pet-task pairs
+    Scheduler ..> Task : completes and creates successors
+    note for Task "Dataclass. time is validated HH:MM. frequency is once, daily, or weekly. task_id is generated."
+    note for Scheduler "Optional filters default to None. All schedule lists contain Pet-Task pairs. Conflicts return warning strings."
